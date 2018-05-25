@@ -11,8 +11,6 @@ from pandas_datareader import data as pdr
 from pandas.plotting import scatter_matrix
 import fix_yahoo_finance
 
-
-
 fix_yahoo_finance.pdr_override()
 
 
@@ -21,13 +19,18 @@ BM_DICT = {
         'USD': 'DX-Y.NYB',
         'US10YR': '^TNX',
         'MSCI EM': 'EEM',
-
+ # dictionary for symbol mapping table, to be added...
         }
 
-def eq(Year, bm_list, col = 'Close'):
+def eq(Year_start, Year_end, bm_list, col = 'Close'):
+    '''
+    Function to download time series data from yahoo finance (with fix patch May' 2018)
+    '''
     return pdr.get_data_yahoo(bm_list, 
-                              start = str(Year) + "-01-01", 
-                              end = str(Year) + "-12-31")[col]
+                              start = str(Year_start) + "-01-01", 
+                              end = str(Year_end) + "-12-31")[col]
+
+
 
 def year_return(xd, rtn_type = 'norm'):   # norm return or log return
     cng = xd[-1] / xd[0] - 1
@@ -36,7 +39,11 @@ def year_return(xd, rtn_type = 'norm'):   # norm return or log return
     return cng
 
 def _corrplt_3bm(year, daily_rtn, annual_rtn):
-
+    '''
+    private function to generate the correlation scatter graph for two time series.
+    Time frame is one calendar year.
+    Mainly utilize Dataframe.corr().
+    '''
     s = scatter_matrix(daily_rtn, figsize = (10,10), alpha = 0.4, diagonal='kde')
 
     s[0,0].annotate('YTD = %.2f' %annual_rtn[0], (0,0), ha='center')
@@ -61,22 +68,60 @@ def _corrplt_3bm(year, daily_rtn, annual_rtn):
     plt.savefig('corrfig'+ str(year), dpi=900)
 
 
-def corrplot(sym_list, year_test):
-
+def corrplot(sym_list, year_start, year_end):
+    '''
+    Main function to generate corr scatter graph.
+    Input:
+        Symbol name list, start year and end year
+    '''
     symbol_list = [BM_DICT[name] for name in sym_list]
-    BM_raw = eq(year_test, symbol_list)
+    BM_raw = eq(year_start, year_end, symbol_list)
     BM_raw = BM_raw.rename(columns = dict(zip(symbol_list,sym_list)))
-    
-    print(BM_raw.shape[0])
-    
+        
     BM_annual_rtn = BM_raw.pct_change(BM_raw.shape[0]-1).iloc[-1]
     BM_daily_rtn = BM_raw.pct_change(1)
     
-    _corrplt_3bm(year_test, BM_daily_rtn, BM_annual_rtn)
+    _corrplt_3bm(year_start, BM_daily_rtn, BM_annual_rtn)
+
+
+def rollingcorr(window, raw2d):
+    '''
+    Generate the rolling correlation with user input moving time window.
+    Mainly utilize Dataframe.rolling(Days).corr() function.
+    Input:
+        time window, time series of 2 indexs.
+    '''
+    if window >= raw2d.shape[0]:
+        raise 'Time Frame Exceed '
+    
+    index_name = raw2d.columns.values[0] 
+    rawcorr = raw2d.rolling(window).corr()
+    corr_pair = rawcorr[index_name].iloc[1::2]
+    corr_pair.index = [_time[0] for _time in corr_pair.index]
+    
+    return corr_pair
 
 
 if __name__ == '__main__':
     corr_list1 = ['S&P500', 'USD', 'MSCI EM']
-    corrplot(corr_list1, 2017)
-    corrplot(corr_list1, 2008)
-
+    symbol_list = [BM_DICT[name] for name in corr_list1]
+    
+    #test1 for plotting scatter matrix as of 2008 & 2017
+    corrplot(corr_list1, 2017, 2017)
+    corrplot(corr_list1, 2008, 2008)
+    
+    #test2 for plot 3m moving corr during 2000 - 2018
+    raw = eq(2004, 2018, symbol_list)
+    raw_daily_rtn = raw.pct_change(1)
+    raw_daily_rtn = raw_daily_rtn.rename(columns = dict(zip(symbol_list,corr_list1)))
+    rtest1 = raw_daily_rtn[['MSCI EM','S&P500']].copy()
+    
+    window = 90
+    corrforplot = rollingcorr(window, rtest1)
+    plt.plot(corrforplot)
+    corr_mean = np.mean(corrforplot)
+    count_timestamp = corrforplot.shape[0]
+    
+    line1, = plt.plot(corrforplot.index, [corr_mean]*count_timestamp, label= 'Corr Meam', linestyle='--')
+    plt.title('%sm rolling corr between MSCI EM and S&P500' % (window // 30), fontsize=11)
+    plt.savefig('rollingcorr', dpi=900)
