@@ -94,10 +94,9 @@ def rollingcorr(window, raw2d):
     if window >= raw2d.shape[0]:
         raise 'Time Frame Exceed '
     
-    index_name = raw2d.columns.values[0] 
+    index1, index2 = raw2d.columns
     rawcorr = raw2d.rolling(window).corr()
-    corr_pair = rawcorr[index_name].iloc[1::2]
-    corr_pair.index = [_time[0] for _time in corr_pair.index]
+    corr_pair = rawcorr[index2].unstack()[index1]
     
     return corr_pair
 
