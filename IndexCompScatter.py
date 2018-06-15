@@ -44,19 +44,20 @@ def DownloadDJIPrc(year = 2018):
     '''
     Download the DJI Index Price
     '''
-
     return pdr.get_data_yahoo('^DJI', str(year)+'-01-01', str(year)+'-12-31').Close
+
 
 
 def DownloadCompPrc(tickers, year = 2018):
     '''
     Download the price of every DJI Component as of the specific year
     '''
- 
     if not isinstance(tickers, list):
         tickers = list(tickers)
 
     return pdr.get_data_yahoo(list(tickers), str(year)+'-01-01', str(year)+'-12-31').Close
+
+
 
 def SplitPoint(Sr, SplitCriteria):
     
@@ -67,16 +68,12 @@ def SplitPoint(Sr, SplitCriteria):
         2. High: split at the highest price
         3. Specific TimeStamp. i.e. 20180201
     '''
-    
     if SplitCriteria in Sr.index:
         return datetime.strptime(SplitCriteria, '%Y%m%d')
-    
     elif  SplitCriteria == 'Low':
         return Sr.idxmin()
-    
     elif SplitCriteria == 'High':
         return Sr.idxmax()
-    
     else:
         raise ValueError ('THe Split Critria must be Low, High or any specific date during the year!')
     
@@ -89,11 +86,10 @@ def ReturnSplit(DF, Sr, SplitDay):
     Ret1 = ToReturn(DF1)
     Ret2 = ToReturn(DF2)
     
-    
     FinalRet = pd.concat([Ret1,Ret2], axis = 1)
     SplitMonDay = SplitDay.strftime('%B%d')
     
-    FinalRet.columns = ['Jan - ' + SplitMonDay, SplitMonDay + ' - ' + Sr.index[-1].strftime('%B%d')]
+    FinalRet.columns = ['January - ' + SplitMonDay, SplitMonDay + ' - ' + Sr.index[-1].strftime('%B%d')]
     
     return FinalRet
 
