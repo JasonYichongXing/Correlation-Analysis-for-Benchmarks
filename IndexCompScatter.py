@@ -20,15 +20,11 @@ import fix_yahoo_finance
 fix_yahoo_finance.pdr_override()
 
 
-ToReturn = lambda df: df.iloc[-1]/df.iloc[0] - 1
-
 def DownloadDJIComp():
-    '''
-    Download the DJI Component symbols from Yahoo Finance
-    '''
+    """Download the DJI Component symbols from Yahoo Finance"""
 
-    YAHOODJIURL = 'https://finance.yahoo.com/quote/%5EDJI/components?p=%5EDJI'
-    response = requests.get(YAHOODJIURL)
+    YAHOO_DJI_URL = 'https://finance.yahoo.com/quote/%5EDJI/components?p=%5EDJI'
+    response = requests.get(YAHOO_DJI_URL)
     soup = bs(response.text, 'lxml')
     
     table = soup.find('table', {'class', 'W(100%) M(0) BdB Bdc($finLightGray)'})
@@ -40,18 +36,14 @@ def DownloadDJIComp():
 
 
 
-def DownloadDJIPrc(year = 2018):
-    '''
-    Download the DJI Index Price
-    '''
+def DownloadDJIPrc(year=2018):
+    """Download the DJI Index Price"""
     return pdr.get_data_yahoo('^DJI', str(year)+'-01-01', str(year)+'-12-31').Close
 
 
 
-def DownloadCompPrc(tickers, year = 2018):
-    '''
-    Download the price of every DJI Component as of the specific year
-    '''
+def DownloadCompPrc(tickers, year=2018):
+    """Download the price of every DJI Component as of the specific year"""
     if not isinstance(tickers, list):
         tickers = list(tickers)
 
@@ -59,15 +51,15 @@ def DownloadCompPrc(tickers, year = 2018):
 
 
 
-def SplitPoint(Sr, SplitCriteria):
-    
-    '''
+def SplitPoint(Sr, SplitCriteria): 
+    """
     Split the return based on the user input criteria.
     Criterias:
         1. Low: split at the lowest price of the Time Series( The second Param: Ts)
         2. High: split at the highest price
         3. Specific TimeStamp. i.e. 20180201
-    '''
+    """
+    
     if SplitCriteria in Sr.index:
         return datetime.strptime(SplitCriteria, '%Y%m%d')
     elif  SplitCriteria == 'Low':
@@ -76,10 +68,13 @@ def SplitPoint(Sr, SplitCriteria):
         return Sr.idxmax()
     else:
         raise ValueError ('THe Split Critria must be Low, High or any specific date during the year!')
-    
+
+        
+def ToReturn(df):
+    return df.iloc[-1]/df.iloc[0] - 1
+
 
 def ReturnSplit(DF, Sr, SplitDay):
-        
     DF1 = DF[:SplitDay]
     DF2 = DF[SplitDay:]
     
@@ -95,8 +90,7 @@ def ReturnSplit(DF, Sr, SplitDay):
 
 
 
-def scatterplot(SplitedReturn, Sr, Splitday, SaveorNo = False):
-    
+def scatterplot(SplitedReturn, Sr, Splitday, SaveorNo=False):
     xmin, ymin = round(SplitedReturn.min(),3)
     xmax, ymax = round(SplitedReturn.max(),3)
     x, y = SplitedReturn.columns
@@ -142,4 +136,4 @@ def Test(AsofYear, Save):
 
 
 if __name__ == '__main__':
-    Test(2018, Save = True)
+    Test(2018, True)
