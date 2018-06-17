@@ -47,7 +47,7 @@ def DownloadCompPrc(tickers, year=2018):
     if not isinstance(tickers, list):
         tickers = list(tickers)
 
-    return pdr.get_data_yahoo(list(tickers), str(year)+'-01-01', str(year)+'-12-31').Close
+    return pdr.get_data_yahoo(tickers, str(year)+'-01-01', str(year)+'-12-31').Close
 
 
 
@@ -67,7 +67,7 @@ def SplitPoint(Sr, SplitCriteria):
     elif SplitCriteria == 'High':
         return Sr.idxmax()
     else:
-        raise ValueError ('THe Split Critria must be Low, High or any specific date during the year!')
+        raise ValueError('THe Split Critria must be Low, High or any specific date during the year!')
 
         
 def ToReturn(df):
@@ -81,7 +81,7 @@ def ReturnSplit(DF, Sr, SplitDay):
     Ret1 = ToReturn(DF1)
     Ret2 = ToReturn(DF2)
     
-    FinalRet = pd.concat([Ret1,Ret2], axis = 1)
+    FinalRet = pd.concat([Ret1,Ret2], axis=1)
     SplitMonDay = SplitDay.strftime('%B%d')
     
     FinalRet.columns = ['January - ' + SplitMonDay, SplitMonDay + ' - ' + Sr.index[-1].strftime('%B%d')]
