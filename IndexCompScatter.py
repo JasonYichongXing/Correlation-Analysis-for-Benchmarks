@@ -54,10 +54,10 @@ def DownloadCompPrc(tickers, year=2018):
 def SplitPoint(Sr, SplitCriteria): 
     """
     Split the return based on the user input criteria.
-    Criterias:
+    Criteria:
         1. Low: split at the lowest price of the Time Series( The second Param: Ts)
         2. High: split at the highest price
-        3. Specific TimeStamp. i.e. 20180201
+        3. TimeStamp: i.e.20180201
     """
     
     if SplitCriteria in Sr.index:
