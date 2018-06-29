@@ -1,12 +1,15 @@
 # Content:
 
-1. Bay-Thinking.ipynb: Intuitive thinking on probability space, full probability formula and Bayesian.
+- Bay-Thinking.ipynb: Intuitive thinking on probability space, full probability formula and Bayesian.
    
-2. EMCrry Squeeze Deepdive.ipynb: Correlation analysis on Emerging Market as of May'2018
+- EMCrry Squeeze Deepdive.ipynb: Correlation analysis on Emerging Market as of May'2018
 
-3. IndexCompScatter.py: 2-Period Scatter plot on DJI components
+- IndexCompScatter.py: 2-Period Scatter plot on DJI components
 
-4. heatmap.py: helper to plot drophalf heatmap
+- heatmap.py: helper to plot drophalf heatmap
+
+
+
 
 
 
