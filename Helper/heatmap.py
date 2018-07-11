@@ -12,7 +12,7 @@ def heatmap(matrix):
     import seaborn as sns
 
     dropSelf = np.zeros_like(matrix)
-    dropSelf[np.triu_indices_from(dropSelf)] = True     
+    dropSelf[np.triu_indices_from(dropSelf)] = True    # Plot Half only
     colormap = sns.diverging_palette(220, 10, as_cmap=True)
     
     sns.heatmap(matrix, cmap=colormap, annot=True, fmt=".2f", mask=dropSelf)
