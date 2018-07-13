@@ -9,7 +9,10 @@
 - heatmap.py: helper to plot drophalf heatmap
 
 
+----------------------------------------------------------
+### Flatter US yield curve (updated Jul'18)
 
+![flatyc](https://user-images.githubusercontent.com/37820014/42703221-f54c5a54-8699-11e8-8d5c-5df516710f01.png)
 
 
 
